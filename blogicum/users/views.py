@@ -1,9 +1,8 @@
 from .forms import CustomUserCreationForm, EditUserProfileForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, UpdateView
 from django.contrib.auth import login, get_user_model
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView
-from django.views.generic import UpdateView
 from django.shortcuts import redirect
 
 User = get_user_model()
@@ -37,4 +36,5 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
             'blog:profile',
             kwargs={'username': self.object.username}
         )
+
 
