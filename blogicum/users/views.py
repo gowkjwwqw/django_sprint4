@@ -1,0 +1,39 @@
+from django.shortcuts import redirect
+from django.views.generic import CreateView
+from .forms import CustomUserCreationForm, EditUserProfileForm
+from django.urls import reverse_lazy, reverse
+from django.contrib.auth import login, get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import UpdateView
+
+User = get_user_model()
+
+
+class ProfileCreateView(CreateView):
+    template_name = 'registration/registration_form.html'
+    form_class = CustomUserCreationForm
+
+    # Перенаправление после успешного выполнения операции
+    success_url = reverse_lazy('users:login')
+
+    def form_valid(self, form):
+        # Сохранение данных в бд
+        user = form.save()
+        # Автоматический логин пользователя
+        login(self.request, user)
+        return redirect('blog:index')
+
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = EditUserProfileForm
+    template_name = 'blog/user.html'
+
+    def get_object(self):
+        return self.request.user
+
+    def get_success_url(self):
+        return reverse(
+            'blog:profile',
+            kwargs={'username': self.object.username}
+        )
